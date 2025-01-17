@@ -1,0 +1,10 @@
+*.egg-info
+__pycache__
+dist/
+*.pyc
+*.swo
+*.swp
+.venv/
+.coverage
+coverage.xml
+.pytest_cache/
