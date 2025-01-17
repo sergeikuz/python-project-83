@@ -23,11 +23,13 @@ jobs:
     steps:
         # Check-out repository under GitHub workspace
         # https://github.com/actions/checkout
+        # Клонируем репозиторий
       - uses: actions/checkout@v4
         # Step's name
       - name: Set up Python3
         # Configures the Python version used on GitHub-hosted runners
         # https://github.com/actions/setup-python
+        # Устанавливаем Python
         uses: actions/setup-python@v4
         # The Node.js version to configure
         # with:
