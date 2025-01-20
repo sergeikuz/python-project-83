@@ -5,6 +5,7 @@ dist/
 *.swo
 *.swp
 .venv/
+.env
 .coverage
 coverage.xml
 .pytest_cache/
