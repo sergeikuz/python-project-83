@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, render_template
 
 load_dotenv()
 
@@ -14,4 +14,4 @@ app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 
 @app.route('/')
 def index():
-    return 'Welcome to Flask!'
+    return render_template('index.html')
