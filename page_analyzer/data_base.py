@@ -21,9 +21,24 @@ def add_url(config, ulr):
 def get_all_urls(config):
     with get_connect(config) as conect:
         with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute('SELECT * FROM urls')
-            result = cursor.fetchall()
-            return result
+            query = (
+                'SELECT \
+                urls.id AS id, \
+                urls.name AS name, \
+                url_checks.created_at AS last_check, \
+                status_code \
+                FROM urls \
+                LEFT JOIN url_checks \
+                ON urls.id = url_checks.url_id \
+                AND url_checks.id = ( \
+                    SELECT max(id) FROM url_checks \
+                    WHERE urls.id = url_checks.url_id \
+                ) \
+                ORDER BY urls.id DESC;'
+            )
+            cursor.execute(query)
+            urls = cursor.fetchall()
+            return urls
 
 
 def get_url_by_id(config, id):
@@ -45,4 +60,26 @@ def get_url_by_name(config, name):
                 (name,)
             )
             result = cursor.fetchone()
+            return result
+        
+
+def add_url_checks(config, data):
+    with get_connect(config) as conect:
+        with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+            cursor.execute(
+                'INSERT INTO url_checks (url_id) VALUES (%s) RETURNING id',
+                (int(data),)
+            )
+            conect.commit()
+
+
+def get_url_checks_by_id(config, id):
+    with get_connect(config) as conect:
+        with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+            cursor.execute(
+                'SELECT * FROM url_checks \
+                WHERE url_id = (%s) ORDER BY id DESC',
+                (id,)
+            )
+            result = cursor.fetchall()
             return result
