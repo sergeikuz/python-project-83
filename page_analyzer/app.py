@@ -11,7 +11,14 @@ from flask import (
     url_for,
 )
 
-from .data_base import add_url, add_url_checks, get_all_urls, get_url_checks_by_id, get_url_by_id, get_url_by_name
+from .data_base import (
+    add_url,
+    add_url_checks,
+    get_all_urls,
+    get_url_by_id,
+    get_url_by_name,
+    get_url_checks_by_id,
+)
 from .normalize_url import normalize_url, validate_url
 
 load_dotenv()
