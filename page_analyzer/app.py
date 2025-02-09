@@ -11,7 +11,7 @@ from flask import (
     url_for,
 )
 
-from .data_base import add_url, get_all_urls, get_url_by_id, get_url_by_name
+from .data_base import add_url, add_url_checks, get_all_urls, get_url_checks_by_id, get_url_by_id, get_url_by_name
 from .normalize_url import normalize_url, validate_url
 
 load_dotenv()
@@ -63,9 +63,28 @@ def url(id):
     if not url:
         return abort(404)
     
+    url_checks = get_url_checks_by_id(DATABASE_URL, id)
     return render_template(
         'url.html',
         url=url,
+        url_checks=url_checks
+    )
+
+
+@app.post('/urls/<int:id>/checks')
+def url_checks(id):
+    url = get_url_by_id(DATABASE_URL, id)
+    if not url:
+        return abort(404)
+    data = id
+    add_url_checks(DATABASE_URL, data)
+    flash('Страница успешно проверена', 'success')
+    url_checks = get_url_checks_by_id(DATABASE_URL, id)
+
+    return render_template(
+        'url.html',
+        url=url,
+        url_checks=url_checks
     )
 
 
