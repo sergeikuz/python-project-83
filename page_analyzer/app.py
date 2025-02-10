@@ -1,4 +1,5 @@
 import os
+import requests
 
 from dotenv import load_dotenv
 from flask import (
@@ -81,18 +82,21 @@ def url(id):
 @app.post('/urls/<int:id>/checks')
 def url_checks(id):
     url = get_url_by_id(DATABASE_URL, id)
-    if not url:
-        return abort(404)
-    data = id
-    add_url_checks(DATABASE_URL, data)
-    flash('Страница успешно проверена', 'success')
-    url_checks = get_url_checks_by_id(DATABASE_URL, id)
+    
+    try:
+        response = requests.get(url.name, timeout=3)
+        response.raise_for_status()
+        id = id
+        status_code = response.status_code
+        flash('Страница успешно проверена', 'success')
+        add_url_checks(DATABASE_URL, id, status_code)
+    
+    except Exception:
+        flash('Произошла ошибка при проверке', 'danger')
+    
+    finally:
 
-    return render_template(
-        'url.html',
-        url=url,
-        url_checks=url_checks
-    )
+        return redirect(url_for('url', id=id))
 
 
 @app.errorhandler(404)
