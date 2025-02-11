@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import lxml
+
 
 def get_data(content: str) -> dict:
     soup = BeautifulSoup(content, 'lxml')

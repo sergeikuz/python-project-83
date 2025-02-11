@@ -70,7 +70,8 @@ def add_url_checks(config, data):
                 'INSERT INTO url_checks \
                 (url_id, status_code, h1, title, description) \
                 VALUES \
-                    (%(url_id)s, %(status_code)s, %(h1)s, %(title)s, %(description)s) \
+                (%(url_id)s, %(status_code)s, %(h1)s, %(title)s, \
+                 %(description)s) \
                 RETURNING id',
                 data
             )

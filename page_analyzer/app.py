@@ -23,7 +23,6 @@ from .data_base import (
 from .normalize_url import normalize_url, validate_url
 from .parser import get_data
 
-
 load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL')
