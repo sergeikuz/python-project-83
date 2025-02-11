@@ -21,6 +21,8 @@ from .data_base import (
     get_url_checks_by_id,
 )
 from .normalize_url import normalize_url, validate_url
+from .parser import get_data
+
 
 load_dotenv()
 
@@ -86,10 +88,14 @@ def url_checks(id):
     try:
         response = requests.get(url.name, timeout=3)
         response.raise_for_status()
-        id = id
-        status_code = response.status_code
+        
+        data = get_data(response.text) 
+        data['url_id'] = id
+        data['status_code'] = response.status_code
+
         flash('Страница успешно проверена', 'success')
-        add_url_checks(DATABASE_URL, id, status_code)
+        
+        add_url_checks(DATABASE_URL, data)
     
     except Exception:
         flash('Произошла ошибка при проверке', 'danger')
