@@ -63,13 +63,16 @@ def get_url_by_name(config, name):
             return result
         
 
-def add_url_checks(config, id, status_code):
+def add_url_checks(config, data):
     with get_connect(config) as conect:
         with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
-                'INSERT INTO url_checks (url_id, status_code) VALUES (%s, %s) \
+                'INSERT INTO url_checks \
+                (url_id, status_code, h1, title, description) \
+                VALUES \
+                    (%(url_id)s, %(status_code)s, %(h1)s, %(title)s, %(description)s) \
                 RETURNING id',
-                (int(id), int(status_code),)
+                data
             )
             conect.commit()
 
