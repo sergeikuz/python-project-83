@@ -41,15 +41,16 @@ jobs:
           curl -LsSf https://astral.sh/uv/install.sh | sh
           make install
       - name: Run linter #and pytest
-        run: #|
+        run: |
           make check
-      # - name: Test & publish code coverage
+      - name: Test & publish code coverage
       #   # Publish code coverage on Code Climate
       #   # https://github.com/paambaati/codeclimate-action
-      #   uses: paambaati/codeclimate-action@v5.0.0
       #   # Add Code Climate secret key
-      #   env:
-      #     CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      #   with:
-      #     coverageCommand: make test-coverage
-      #     debug: true
+        uses: paambaati/codeclimate-action@v5.0.0
+        if: github.ref_name == 'main'
+        env:
+          CC_TEST_REPORTER_ID: 4deda40d2851fe9a305474a12971b43a1ec1d68f6772c8d43befa4fd2a837067
+        with:
+          coverageCommand: make test-coverage
+          debug: true
