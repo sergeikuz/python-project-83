@@ -13,7 +13,6 @@ This is project ["Page analyzer"](https://ru.hexlet.io/programs/python/projects/
 <div id="header" align="center">
   <img src="https://github.com/sergeikuz/sergeikuz/blob/main/shrine20250206-149215-nplo4j.gif"/>
 </div>
-<div id="badges" align="center">
 
 ### Used technologies:
 [![](https://img.shields.io/badge/language-python-blue)](https://www.python.org/)
