@@ -26,7 +26,6 @@ This project was built using these tools:
 
 | Tool                                                                        | Description                                             |
 |-----------------------------------------------------------------------------|---------------------------------------------------------|
-| [uv](https://docs.astral.sh/uv/)                                        | "is an extremely fast Python package manager written in Rust. It is designed as a replacement for pip and pip-tools. It can also replace venv and pyenv."  |
-| [Py.Test](https://pytest.org)                                               | "A mature full-featured Python testing tool"            |
-| [ruff](https://docs.astral.sh/ruff/)               | "Your Tool For linter and Style Guide Enforcement"|
+| [uv](https://docs.astral.sh/uv/)                                        | "is an extremely fast Python package manager written in Rust. It is designed as a replacement for pip and pip-tools. It can also replace venv and pyenv."  |            |
+| [ruff](https://docs.astral.sh/ruff/)               | "Your Tool For Linter and Style Guide Enforcement"|
 
