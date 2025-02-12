@@ -35,6 +35,7 @@ This project was built using these tools:
 | [validators](https://validators.readthedocs.io/en/latest/#module-validators.url)                                        | "Python Data Validation for Humans™."  |
 | [Requests](https://requests.readthedocs.io/en/latest/)                                        | "Requests is an elegant and simple HTTP library for Python, built for human beings."  |
 | [Beautifulsoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)                                        | "Beautiful Soup is a Python library for pulling data out of HTML and XML files."  |
+---
 
 ## Installation
 ### Clone the repo:
