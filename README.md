@@ -36,16 +36,6 @@ This project was built using these tools:
 | [Requests](https://requests.readthedocs.io/en/latest/)                                        | "Requests is an elegant and simple HTTP library for Python, built for human beings."  |
 | [Beautifulsoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)                                        | "Beautiful Soup is a Python library for pulling data out of HTML and XML files."  |
 
-Installation
-Clone the repo: git clone https://github.com/Barzabel/python-project-83. To use the app properly you'll need to provide it with $DATABASE_URL and $SECRET_KEY vars.
-To deploy the application, you need to rename the .env-sample file to .env in the root directory. After that, modify the values for SECRET_KEY and DATABASE_URL. It is important to insert your own values.
-
-After that
-
-Run make build to install all required packages and create necessary tables in the database.
-
-Run make start to start.
-
 ## Installation
 ### Clone the repo:
 ```
