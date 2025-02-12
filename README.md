@@ -39,7 +39,7 @@ This project was built using these tools:
 ## Installation
 ### Clone the repo:
 ```
-git clone git@github.com:sergeikuz/python-project-83.git
+git clone git@github.com:sergeikuz/python-project-83
 cd python-project-83
 ```
 ### To use the app properly you'll need to provide it with $DATABASE_URL and $SECRET_KEY vars.
