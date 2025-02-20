@@ -11,13 +11,11 @@ def normalize_url(url: str) -> str:
           will return "https://www.example.com".
     '''
     parsed_url = urlparse(url)
-    return "://".join([parsed_url.scheme, parsed_url.hostname])
+    return parsed_url.scheme + '://' + parsed_url.hostname
 
 
 def validate_url(url: str) -> list:
     errors = []
-    if not validators.url(url):
-        errors.append(('Некорректный URL', 'danger'))
-    if len(url) > 255:
+    if not validators.url(url) or len(url) > 255:
         errors.append(('Некорректный URL', 'danger'))
     return errors
