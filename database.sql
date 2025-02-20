@@ -11,8 +11,8 @@ CREATE TABLE url_checks (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     url_id BIGINT REFERENCES urls (id),
     status_code INT,
-    h1 TEXT,
-    title TEXT,
-    description TEXT,
+    h1 VARCHAR(65),
+    title VARCHAR(70),
+    description VARCHAR(300),
     created_at DATE DEFAULT CURRENT_TIMESTAMP
 );
