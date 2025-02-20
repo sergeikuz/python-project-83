@@ -1,4 +1,6 @@
 PORT ?= 5000
+postgresql: 	
+	sudo service postgresql start
 
 install:
 	uv sync
