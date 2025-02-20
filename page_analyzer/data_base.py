@@ -1,26 +1,41 @@
+import os
+
 import psycopg2
+from dotenv import load_dotenv
 from psycopg2.extras import NamedTupleCursor
 
+load_dotenv()
 
-def get_connect(config):
-    return psycopg2.connect(config)
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 
-def add_url(config, ulr):
-    with get_connect(config) as conect:
-        with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+class DatabaseConnection:
+    def __enter__(self):
+        self.connection = psycopg2.connect(DATABASE_URL)
+        self.cursor = self.connection.cursor(cursor_factory=NamedTupleCursor)
+        return self.cursor
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            print(f"Возникло исключение типа: {exc_type}, "
+                  f"со значением: {exc_value}")
+        self.cursor.close()
+        self.connection.commit()
+        self.connection.close()
+
+
+class UrlRepository:
+    def add_url(self, url):
+        with DatabaseConnection() as cursor:
             cursor.execute(
                 'INSERT INTO urls (name) VALUES (%s) RETURNING id',
-                (str(ulr),)
+                (str(url),)
             )
             result = cursor.fetchone()
-            conect.commit()
             return result
-
-
-def get_all_urls(config):
-    with get_connect(config) as conect:
-        with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+    
+    def get_all_urls(self):
+        with DatabaseConnection() as cursor:
             query = (
                 'SELECT \
                 urls.id AS id, \
@@ -40,10 +55,8 @@ def get_all_urls(config):
             urls = cursor.fetchall()
             return urls
 
-
-def get_url_by_id(config, id):
-    with get_connect(config) as conect:
-        with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+    def get_url_by_id(self, id):
+        with DatabaseConnection() as cursor:
             cursor.execute(
                 'SELECT * FROM urls WHERE id = (%s)',
                 (id,)
@@ -51,10 +64,8 @@ def get_url_by_id(config, id):
             result = cursor.fetchone()
             return result
         
-
-def get_url_by_name(config, name):
-    with get_connect(config) as conect:
-        with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+    def get_url_by_name(self, name):
+        with DatabaseConnection() as cursor:
             cursor.execute(
                 'SELECT * FROM urls WHERE name = (%s)',
                 (name,)
@@ -62,25 +73,20 @@ def get_url_by_name(config, name):
             result = cursor.fetchone()
             return result
         
-
-def add_url_checks(config, data):
-    with get_connect(config) as conect:
-        with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+    def add_url_checks(self, data):
+        with DatabaseConnection() as cursor:
             cursor.execute(
                 'INSERT INTO url_checks \
                 (url_id, status_code, h1, title, description) \
                 VALUES \
                 (%(url_id)s, %(status_code)s, %(h1)s, %(title)s, \
-                 %(description)s) \
+                %(description)s) \
                 RETURNING id',
                 data
             )
-            conect.commit()
 
-
-def get_url_checks_by_id(config, id):
-    with get_connect(config) as conect:
-        with conect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+    def get_url_checks_by_id(self, id):
+        with DatabaseConnection() as cursor:
             cursor.execute(
                 'SELECT * FROM url_checks \
                 WHERE url_id = (%s) ORDER BY id DESC',

@@ -12,14 +12,7 @@ from flask import (
     url_for,
 )
 
-from .data_base import (
-    add_url,
-    add_url_checks,
-    get_all_urls,
-    get_url_by_id,
-    get_url_by_name,
-    get_url_checks_by_id,
-)
+from .data_base import UrlRepository
 from .normalize_url import normalize_url, validate_url
 from .parser import get_data
 
@@ -31,6 +24,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config['DATABASE_URL'] = DATABASE_URL
+
+repo = UrlRepository()
 
 
 @app.route('/')
@@ -48,31 +43,31 @@ def urls_create():
         return render_template('index.html', url=url), 422
     
     url = normalize_url(url)
-    found_url = get_url_by_name(DATABASE_URL, url)
+    found_url = repo.get_url_by_name(url)
 
     if found_url:
         flash('Страница уже существует', 'info')
         id = found_url.id
         return redirect(url_for('url', id=id))
     else:
-        id = add_url(DATABASE_URL, url)
+        id = repo.add_url(url)
         flash('Страница успешно добавлена', 'success')
         return redirect(url_for('url', id=id.id))
     
 
 @app.get('/urls')
 def urls():
-    urls = get_all_urls(DATABASE_URL)
+    urls = repo.get_all_urls()
     return render_template('urls.html', urls=urls)
 
 
 @app.get('/urls/<int:id>')
 def url(id):
-    url = get_url_by_id(DATABASE_URL, id)
+    url = repo.get_url_by_id(id)
     if not url:
         return abort(404)
     
-    url_checks = get_url_checks_by_id(DATABASE_URL, id)
+    url_checks = repo.get_url_checks_by_id(id)
     return render_template(
         'url.html',
         url=url,
@@ -82,7 +77,7 @@ def url(id):
 
 @app.post('/urls/<int:id>/checks')
 def url_checks(id):
-    url = get_url_by_id(DATABASE_URL, id)
+    url = repo.get_url_by_id(id)
     
     try:
         response = requests.get(url.name, timeout=3)
@@ -92,9 +87,8 @@ def url_checks(id):
         data['url_id'] = id
         data['status_code'] = response.status_code
 
+        repo.add_url_checks(data)
         flash('Страница успешно проверена', 'success')
-        
-        add_url_checks(DATABASE_URL, data)
     
     except Exception:
         flash('Произошла ошибка при проверке', 'danger')
