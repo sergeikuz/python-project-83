@@ -25,7 +25,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config['DATABASE_URL'] = DATABASE_URL
 
-repo = UrlRepository()
+repo = UrlRepository(DATABASE_URL)
 
 
 @app.route('/')
@@ -38,8 +38,7 @@ def urls_create():
     url = request.form.get('url', '').strip()
     errors = validate_url(url)
     if errors:
-        for text, category in errors:
-            flash(text, category)
+        flash(errors, 'danger')
         return render_template('index.html', url=url), 422
     
     url = normalize_url(url)
@@ -47,8 +46,7 @@ def urls_create():
 
     if found_url:
         flash('Страница уже существует', 'info')
-        id = found_url.id
-        return redirect(url_for('url', id=id))
+        return redirect(url_for('url', id=found_url.id))
     else:
         id = repo.add_url(url)
         flash('Страница успешно добавлена', 'success')
@@ -101,3 +99,7 @@ def url_checks(id):
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('errors/404.html'), 404
+
+
+if __name__ == '__main__':
+    app.run()
