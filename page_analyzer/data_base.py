@@ -1,62 +1,67 @@
-import os
-
 import psycopg2
-from dotenv import load_dotenv
 from psycopg2.extras import NamedTupleCursor
-
-load_dotenv()
-
-DATABASE_URL = os.getenv('DATABASE_URL')
-
-
-class DatabaseConnection:
-    def __enter__(self):
-        self.connection = psycopg2.connect(DATABASE_URL)
-        self.cursor = self.connection.cursor(cursor_factory=NamedTupleCursor)
-        return self.cursor
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        if exc_type is not None:
-            print(f"Возникло исключение типа: {exc_type}, "
-                  f"со значением: {exc_value}")
-        self.cursor.close()
-        self.connection.commit()
-        self.connection.close()
 
 
 class UrlRepository:
+    def __init__(self, db_url):
+        self.conn = psycopg2.connect(db_url)
+
     def add_url(self, url):
-        with DatabaseConnection() as cursor:
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
                 'INSERT INTO urls (name) VALUES (%s) RETURNING id',
                 (str(url),)
             )
             result = cursor.fetchone()
+            self.conn.commit()
             return result
     
     def get_all_urls(self):
-        with DatabaseConnection() as cursor:
-            query = (
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
+            query_for_ulrs = (
                 'SELECT \
-                urls.id AS id, \
-                urls.name AS name, \
-                url_checks.created_at AS last_check, \
-                status_code \
+                id, \
+                name \
                 FROM urls \
-                LEFT JOIN url_checks \
-                ON urls.id = url_checks.url_id \
-                AND url_checks.id = ( \
-                    SELECT max(id) FROM url_checks \
-                    WHERE urls.id = url_checks.url_id \
-                ) \
                 ORDER BY urls.id DESC;'
             )
-            cursor.execute(query)
+            cursor.execute(query_for_ulrs)
             urls = cursor.fetchall()
-            return urls
+            list_of_urls = []
+
+            for row in urls:
+                list_of_urls.append(
+                    {
+                        'id': row.id,
+                        'name': row.name
+                    }
+                )
+
+            query_for_url_checks = (
+                'SELECT \
+                id, \
+                url_id, \
+                status_code, \
+                created_at \
+                FROM url_checks \
+                ORDER BY id;'
+            )
+            cursor.execute(query_for_url_checks)
+            urls_checks = cursor.fetchall()
+
+            for row_url in list_of_urls:
+                for row_check in urls_checks:
+                    if row_url['id'] == row_check.url_id:
+                        row_url.update({
+                                'last_check': row_check.created_at,
+                                'status_code': row_check.status_code 
+                        })
+            
+            self.conn.commit()
+            return list_of_urls
 
     def get_url_by_id(self, id):
-        with DatabaseConnection() as cursor:
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
                 'SELECT * FROM urls WHERE id = (%s)',
                 (id,)
@@ -65,16 +70,17 @@ class UrlRepository:
             return result
         
     def get_url_by_name(self, name):
-        with DatabaseConnection() as cursor:
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
                 'SELECT * FROM urls WHERE name = (%s)',
                 (name,)
             )
             result = cursor.fetchone()
+            self.conn.commit()
             return result
         
     def add_url_checks(self, data):
-        with DatabaseConnection() as cursor:
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
                 'INSERT INTO url_checks \
                 (url_id, status_code, h1, title, description) \
@@ -84,13 +90,15 @@ class UrlRepository:
                 RETURNING id',
                 data
             )
+            self.conn.commit()
 
     def get_url_checks_by_id(self, id):
-        with DatabaseConnection() as cursor:
+        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
                 'SELECT * FROM url_checks \
                 WHERE url_id = (%s) ORDER BY id DESC',
                 (id,)
             )
             result = cursor.fetchall()
+            self.conn.commit()
             return result
