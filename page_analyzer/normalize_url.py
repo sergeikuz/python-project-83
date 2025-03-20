@@ -15,7 +15,7 @@ def normalize_url(url: str) -> str:
 
 
 def validate_url(url: str) -> list:
-    errors = []
+    errors = ''
     if not validators.url(url) or len(url) > 255:
-        errors.append(('Некорректный URL', 'danger'))
+        errors = 'Некорректный URL'
     return errors
