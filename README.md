@@ -56,5 +56,5 @@ make build
 make start
 ```
 
-### Good luck and have a fun! 🤚
+### Good luck and have a fun!) 🤚
 
